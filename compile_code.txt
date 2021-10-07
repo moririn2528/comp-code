@@ -1,0 +1,1 @@
+g++ -std=c++17 -D_GLIBCXX_DEBUG -Wall -Wextra -Wl,--stack,1048576000 code\9.cpp -o a.exe

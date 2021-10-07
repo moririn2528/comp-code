@@ -1,0 +1,111 @@
+class SuffixArray{
+private:
+	void get_sa_vec_sub(vector<int>& origin_vector,vector<int>& suffix_vector,vector<char>& LS,vector<int>& pos,vector<int>& origin_cnt){
+		int a,b;
+		int i,j;
+		int n=origin_vector.size();
+		vector<int> cnt(origin_cnt.size(),0);
+		for(i=0;i<n;i++){///fill L type
+			a=suffix_vector[i]-1;
+			if(a<0 || LS[a]==0)continue;
+			b=origin_vector[a];
+			suffix_vector[pos[b]+cnt[b]]=a;
+			cnt[b]++;
+		}
+		cnt=origin_cnt;
+		for(i=n-1;i>=0;i--){//fill S type
+			a=suffix_vector[i]-1;
+			if(a<0 || LS[a]==1)continue;
+			b=origin_vector[a];
+			cnt[b]--;
+			suffix_vector[pos[b]+cnt[b]]=a;
+		}
+	}
+	vector<int> get_sa_vec(vector<int>& origin_vector){
+		//origin_vector: non-negative integer, Max=O(n)
+		int n=origin_vector.size();
+		int i,j,k;
+		int a,b;
+		for(i=0,a=0;i<n;i++){// set guard
+			origin_vector[i]++;
+			a=max(a,origin_vector[i]);
+		}
+		origin_vector.push_back(0),n++;
+
+		vector<int> suffix_vector(n);//id in sort strings
+		vector<char> LS(n,0);//0:Smaller, 1:Larger
+		vector<int> next_vector,lms(n,-1),lms_vec;
+		vector<int> origin_cnt(a+1),pos(a+1);
+		for(i=0;i<n;i++){
+			origin_cnt[origin_vector[i]]++;
+		}
+		for(i=0;i<a;i++){
+			pos[i+1]=pos[i]+origin_cnt[i];
+		}
+		vector<int> cnt=origin_cnt;
+		for(i=n-2;i>=0;i--){
+			if(origin_vector[i]>origin_vector[i+1])LS[i]=1;
+			if(origin_vector[i]==origin_vector[i+1])LS[i]=LS[i+1];
+			if(LS[i]==1 && LS[i+1]==0){
+				b=origin_vector[i+1];
+				cnt[b]--;
+				suffix_vector[pos[b]+cnt[b]]=i+1;
+				lms_vec.push_back(i+1);
+			}
+		}
+		reverse(lms_vec.begin(),lms_vec.end());//to ascending order
+		i=0;
+		for(auto num:lms_vec){
+			lms[num]=i++;
+		}
+		get_sa_vec_sub(origin_vector,suffix_vector,LS,pos,origin_cnt);
+		if(lms_vec.size()<=1)return suffix_vector;//only guard
+		next_vector.assign(lms_vec.size()-1,0);
+		int bef_pos=n-1;
+		for(i=1,k=-1;i<n;i++){
+			a=suffix_vector[i];
+			if(lms[a]!=-1){//left most S
+				assert(lms[a]<next_vector.size());
+				for(j=0;j<n;j++){//check if same string or not
+					if(bef_pos+j>=n || a+j>=n)break;
+					if(j>0 && (lms[a+j]!=-1 && lms[bef_pos+j]!=-1))break;
+					if(j>0 && (lms[a+j]!=-1 || lms[bef_pos+j]!=-1)){
+						k++;
+						break;
+					}
+					if(origin_vector[a+j]!=origin_vector[bef_pos+j]){
+						k++;
+						break;
+					}
+				}
+				next_vector[lms[a]]=k;
+				bef_pos=a;
+			}
+		}
+		vector<int> lms_sa=get_sa_vec(next_vector);
+		suffix_vector.assign(n,0);
+		reverse(lms_sa.begin(),lms_sa.end());//to descending order
+		cnt=origin_cnt;
+		for(auto index:lms_sa){
+			a=lms_vec[index];
+			b=origin_vector[a];
+			cnt[b]--;
+			suffix_vector[pos[b]+cnt[b]]=a;
+		}
+		get_sa_vec_sub(origin_vector,suffix_vector,LS,pos,origin_cnt);
+		return suffix_vector;
+	}
+public:
+	vector<int> get_sa(vector<int> v1){
+		vector<int> vs=get_sa_vec(v1);
+		vs.erase(vs.begin());
+		return vs;
+	}
+	vector<int> get_sa(string origin_string){
+		vector<int> origin_vector(origin_string.size(),0);
+		for(int i=0;i<origin_string.size();i++){
+			origin_vector[i]=(int)origin_string[i];
+		}
+		return get_sa(origin_vector);
+	}
+};

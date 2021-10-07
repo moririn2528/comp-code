@@ -1,0 +1,3 @@
+ファイル FILES\\greedy_out.txt と OUT\\199.TXT を比較しています
+FC: 相違点は検出されませんでした
+
