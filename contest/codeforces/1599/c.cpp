@@ -66,6 +66,26 @@ namespace sol{
         int n,m;
         int i,j,k;
         int a,b,c;
+        double da,db;
+        cin>>n>>da;
+        if(da==0){
+            cout<<0<<endl;
+            return;
+        }
+        da-=1e-9;
+        da*=n*(n-1)*(n-2)/6;
+        a=da+1;
+        a*=2;
+        for(i=0;i<=n;i++){
+            b=i*(i-1)*(i-2)/6;
+            b+=i*(i-1)*(n-i)/2;
+            b*=2;
+            b+=i*(n-i)*(n-i-1)/2;
+            if(a<=b){
+                cout<<i<<endl;
+                return;
+            }
+        }
     }
 }
 

@@ -66,6 +66,21 @@ namespace sol{
         int n,m;
         int i,j,k;
         int a,b,c;
+        while(cin>>n>>m){
+            if(n==0 && m==0)return;
+            vector<vector<int>> v1(m,vector<int>(n));
+            cin>>v1;
+            vector<int> v2;
+            for(i=0;i<n;i++){
+                a=0;
+                for(j=0;j<m;j++){
+                    a+=v1[j][i];
+                }
+                v2.push_back(a);
+            }
+            sort(v2.rbegin(),v2.rend());
+            cout<<v2[0]<<endl;
+        }
     }
 }
 

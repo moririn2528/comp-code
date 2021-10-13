@@ -62,15 +62,29 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 
 namespace sol{
 
+    void init(){
+        
+    }
+
     void solve(){
         int n,m;
         int i,j,k;
-        int a,b,c;
+        LL a,b,c;
+        cin>>a;
+        b=max((LL)sqrt(a)-2,1LL);
+        for(;b*b<=a;b++);
+        b--;
+        cout<<b<<endl;
     }
 }
 
 int main(){
     cin.tie(0);
     ios::sync_with_stdio(false);
-    sol::solve();
+    int n,i;
+    sol::init();
+    cin>>n;
+    for(i=0;i<n;i++){
+        sol::solve();
+    }
 }

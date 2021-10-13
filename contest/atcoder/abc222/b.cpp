@@ -66,6 +66,13 @@ namespace sol{
         int n,m;
         int i,j,k;
         int a,b,c;
+        cin>>n>>m;
+        b=0;
+        for(i=0;i<n;i++){
+            cin>>a;
+            if(a<m)b++;
+        }
+        cout<<b<<endl;
     }
 }
 

@@ -62,15 +62,56 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 
 namespace sol{
 
+    void init(){
+        
+    }
+
     void solve(){
-        int n,m;
+        const LL N=1e4+7;
+        LL n,m;
         int i,j,k;
-        int a,b,c;
+        LL a,b,c;
+        cin>>n;
+        if(n%5==0 || n%4==0){
+            cout<<-1<<endl;
+            return;
+        }
+        map<LL,LL> m1;
+        a=0,b=1;
+        for(i=0;i<N;i++){
+            m1[a]=i;
+            if(a==0 && i){
+                cout<<i<<endl;
+                return;
+            }
+            a=(a*10+2)%n;
+            b=b*10%n;
+        }
+        c=a;
+        a=0;
+        for(i=0;i<N;i++){
+            LL bef=a;
+            a=b*a+c;
+            a%=n;
+            if(m1.find(a)==m1.end())continue;
+            for(j=0;j<N-m1[a];j++){
+                bef=(bef*10+2)%n;
+            }
+            if(bef==0)cout<<(i+1)*N-m1[a]<<endl;
+            else cout<<-1<<endl;
+            return;
+        }
+        cout<<-1<<endl;
     }
 }
 
 int main(){
     cin.tie(0);
     ios::sync_with_stdio(false);
-    sol::solve();
+    int n,i;
+    sol::init();
+    cin>>n;
+    for(i=0;i<n;i++){
+        sol::solve();
+    }
 }

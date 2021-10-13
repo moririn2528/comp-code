@@ -61,11 +61,46 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 }
 
 namespace sol{
+    const int N=35;
+    const int mv[6][2]={{1,1},{1,0},{0,1},{-1,-1},{-1,0},{0,-1}};
 
     void solve(){
         int n,m;
         int i,j,k;
         int a,b,c;
+        int x,y;
+        while(cin>>m>>n){
+            if(m==0 && n==0)return;
+            vector<P> vp;
+            for(i=0;i<n;i++){
+                cin>>a>>b;
+                vp.push_back({a,b});
+            }
+            cin>>x>>y;
+            vector<vector<char>> used(2*N,vector<char>(2*N));
+            for(i=0;i<n;i++){
+                a=vp[i].first,b=vp[i].second;
+                a-=x-N,b-=y-N;
+                if(a<0 || a>=2*N || b<0 || b>=2*N)continue;
+                used[a][b]=1;
+            }
+            queue<P> q1;
+            int s=0;
+            q1.push({N,N});
+            for(i=0;i<=m;i++){
+                for(j=q1.size();j>0;j--){
+                    a=q1.front().first,b=q1.front().second;
+                    q1.pop();
+                    if(used[a][b])continue;
+                    used[a][b]=1;
+                    s++;
+                    for(k=0;k<6;k++){
+                        q1.push({a+mv[k][0],b+mv[k][1]});
+                    }
+                }
+            }
+            cout<<s<<endl;
+        }
     }
 }
 

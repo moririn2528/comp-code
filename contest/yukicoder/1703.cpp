@@ -63,9 +63,25 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 namespace sol{
 
     void solve(){
-        int n,m;
+        int n,m,q;
         int i,j,k;
         int a,b,c;
+        cin>>n>>m>>q;
+        vector<vector<char>> path(n+1,vector<char>(m+1));
+        vector<vector<int>> dp(n+2,vector<int>(m+2));
+        for(i=0;i<q;i++){
+            cin>>a>>b;
+            a--,b--;
+            path[a][b]=1;
+        }
+        for(i=0;i<=n;i++){
+            for(j=0;j<=m;j++){
+                if(path[i][j])dp[i+1][j+1]=max(dp[i+1][j+1],dp[i][j]+1);
+                dp[i+1][j]=max(dp[i+1][j],dp[i][j]);
+                dp[i][j+1]=max(dp[i][j+1],dp[i][j]);
+            }
+        }
+        cout<<dp[n][m]<<endl;
     }
 }
 

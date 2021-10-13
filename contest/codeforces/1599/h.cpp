@@ -61,11 +61,40 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 }
 
 namespace sol{
+    int ques(int x,int y){
+        cout<<"? "<<x<<" "<<y<<endl;
+        int s;
+        cin>>s;
+        return s;
+    }
 
     void solve(){
+        const int N=1e9;
         int n,m;
         int i,j,k;
         int a,b,c;
+        int z[3]={1,N};
+        int q[3]={ques(1,1),ques(1,N),ques(N,1)};
+        int y[2]={q[0],q[1]};
+        vector<int> v1={q[0],q[1]};
+        while(z[1]-z[0]>1){
+            z[2]=(z[0]+z[1])/2;
+            a=ques(1,z[2]);
+            v1.push_back(a);
+            if(y[0]-a==z[2]-z[0]){
+                z[0]=z[2],y[0]=a;
+                continue;
+            }
+            if(y[1]-a==z[1]-z[2]){
+                z[1]=z[2],y[1]=a;
+                continue;
+            }
+            break;
+        }
+        sort(v1.begin(),v1.end());
+        a=v1[0];
+        b=q[0]-a;
+        cout<<"! "<<a+1<<" "<<b+1<<" "<<N-(q[2]-b)<<" "<<N-(q[1]-a)<<endl;
     }
 }
 

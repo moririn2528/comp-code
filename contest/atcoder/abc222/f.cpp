@@ -61,11 +61,54 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 }
 
 namespace sol{
+    vector<LL> va,vb,vd;
+    vector<vector<LP>> path;
+    void dfs1(int pos,int bef){
+        for(auto node:path[pos]){
+            int to=node.first,cost=node.second;
+            if(to==bef)continue;
+            dfs1(to,pos);
+            va[pos]=max({va[pos],va[to]+cost,vd[to]+cost});
+        }
+    }
+
+    void dfs2(int pos,int bef){
+        vector<LL> v1={vd[pos],vb[pos]};
+        for(auto node:path[pos]){
+            int to=node.first,cost=node.second;
+            if(to==bef)continue;
+            v1.push_back(max(va[to],vd[to])+cost);
+        }
+        sort(v1.rbegin(),v1.rend());
+        for(auto node:path[pos]){
+            int to=node.first,cost=node.second;
+            if(to==bef)continue;
+            if(max(va[to],vd[to])+cost==v1[0])vb[to]=v1[1]+cost;
+            else vb[to]=v1[0]+cost;
+            dfs2(to,pos);
+        }
+    }
 
     void solve(){
         int n,m;
         int i,j,k;
         int a,b,c;
+        cin>>n;
+        path.resize(n);
+        va.resize(n),vb.resize(n);
+        vd.resize(n);
+        for(i=0;i<n-1;i++){
+            cin>>a>>b>>c;
+            a--,b--;
+            path[a].push_back({b,c});
+            path[b].push_back({a,c});
+        }
+        cin>>vd;
+        dfs1(0,-1);
+        dfs2(0,-1);
+        for(i=0;i<n;i++){
+            cout<<max(va[i],vb[i])<<endl;
+        }
     }
 }
 

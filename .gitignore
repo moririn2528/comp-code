@@ -3,4 +3,10 @@ atcoder_document/
 header/
 test/
 txt/
+contest/mm/tools/
+
+
 *.exe
+*.out
+
+topcoder.jnlp

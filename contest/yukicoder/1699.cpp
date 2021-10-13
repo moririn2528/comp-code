@@ -66,6 +66,9 @@ namespace sol{
         int n,m;
         int i,j,k;
         int a,b,c;
+        cin>>a>>b;
+        if(a==b)cout<<"Yes"<<endl;
+        else cout<<"No"<<endl;
     }
 }
 

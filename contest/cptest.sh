@@ -1,4 +1,5 @@
 #!/bin/bash
+PS1="\[\033[36m\]\u@\h\[\033[00m\]:\[\033[01m\]\w\[\033[00m\]\\$ "
 
 problem_name=$1
 problem_name=${problem_name##*\\}

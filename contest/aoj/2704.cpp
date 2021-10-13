@@ -61,11 +61,62 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 }
 
 namespace sol{
+    typedef tuple<int,int,int> T;
 
     void solve(){
         int n,m;
+        int st,en;
         int i,j,k;
         int a,b,c;
+        char ca;
+        while(cin>>n>>m>>st>>en){
+            if(n==0)return;
+            vector<vector<int>> v1(n,vector<int>(n,0));
+            vector<vector<vector<char>>> used(n,vector<vector<char>>(n,vector<char>(10)));
+            //()[]a+*
+            st--,en--;
+            queue<T> q1;
+            for(i=0;i<m;i++){
+                cin>>a>>b>>ca;
+                a--,b--;
+                if(ca=='(')c=1;
+                if(ca==')')c=2;
+                if(ca=='[')c=4;
+                if(ca==']')c=8;
+                if(ca=='a')c=16;
+                if(ca=='+')c=32;
+                if(ca=='*')c=64;
+                v1[a][b]|=c;
+                if(ca=='a'){
+                    q1.push({a,b,2});
+                }
+            }
+            while(!q1.empty()){
+                tie(a,b,c)=q1.front();q1.pop();
+                if(used[a][b][c])continue;
+                used[a][b][c]=1;
+                for(i=0;i<n;i++){
+                    if(c==0){
+                        if(v1[i][a]&1)q1.push({i,b,5});
+                        if(v1[i][a]&4)q1.push({i,b,6});
+                        if(used[b][i][3])q1.push({a,i,0});
+                    }
+                    if(c==1){
+                        if(v1[i][a]&32)q1.push({i,b,3});
+                        if(used[b][i][4])q1.push({a,i,1});
+                    }
+                    if(c==2 && (v1[i][a]&64))q1.push({i,b,4});
+                    if(c==3 && (used[i][a][0]))q1.push({i,b,0});
+                    if(c==4 && (used[i][a][1]))q1.push({i,b,1});
+                    if(c==5 && (v1[b][i]&2))q1.push({a,i,2});
+                    if(c==6 && (v1[b][i]&8))q1.push({a,i,2});
+                }
+                if(c==1)q1.push({a,b,0});
+                if(c==2)q1.push({a,b,1});
+            }
+            if(used[st][en][0])cout<<"Yes"<<endl;
+            else cout<<"No"<<endl;
+        }
     }
 }
 

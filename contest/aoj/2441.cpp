@@ -21,7 +21,7 @@ using namespace std;
 typedef long long int LL;
 typedef pair<int,int> P;
 typedef pair<LL,LL> LP;
-const int INF=1<<30;
+const LL INF=1LL<<57;
 const LL MAX=1e9+7;
 
 void array_show(int *array,int array_n,char middle=' '){
@@ -62,10 +62,42 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 
 namespace sol{
 
+    LL count(LL a){
+        LL s=0;
+        LL i,j;
+        for(i=1,j=1;i<INF && i<a;i*=10,j++){
+            LL b=min(a,10*i);
+            LL x=(b-1)/3-(i-1)/3;
+            LL y=(b-1)/5-(i-1)/5;
+            LL z=(b-1)/15-(i-1)/15;
+            s+=j*(b-i-x-y+z);
+            s+=x*4+y*4;
+            if(s>INF)return s;
+        }
+        return s;
+    }
+
     void solve(){
-        int n,m;
-        int i,j,k;
-        int a,b,c;
+        LL n,m;
+        LL i,j,k;
+        LL a,b,c;
+        LL z[3]={1,INF};
+        cin>>n;
+        while(z[1]-z[0]>1){
+            z[2]=(z[0]+z[1])/2;
+            if(count(z[2])<n)z[0]=z[2];
+            else z[1]=z[2];
+        }
+        a=z[0];
+        n-=count(a)+1;
+        string ss;
+        for(i=a;i<a+50;i++){
+            if(i%15==0)ss+="FizzBuzz";
+            else if(i%3==0)ss+="Fizz";
+            else if(i%5==0)ss+="Buzz";
+            else ss+=to_string(i);
+        }
+        cout<<ss.substr(n,20)<<endl;
     }
 }
 

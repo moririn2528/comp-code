@@ -1,3 +1,7 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+
 class Dice{
     // 0
     //1234
@@ -20,10 +24,22 @@ public:
         swap(A[5],A[2]);
     }
 
+    void rotateXrev(){
+        swap(A[5],A[2]);
+        swap(A[4],A[5]);
+        swap(A[0],A[4]);
+    }
+
     void rotateY(){//0->3->5->1
         swap(A[0],A[1]);
         swap(A[1],A[5]);
         swap(A[5],A[3]);
+    }
+
+    void rotateYrev(){
+        swap(A[5],A[3]);
+        swap(A[1],A[5]);
+        swap(A[0],A[1]);
     }
 
     void rotateZ(){//1->2->3->4
@@ -32,6 +48,12 @@ public:
         swap(A[2],A[1]);
     }
 
+    void rotateZrev(){
+        swap(A[2],A[1]);
+        swap(A[3],A[2]);
+        swap(A[4],A[3]);
+    }
+    
     template<typename T> T hash(int base){
         T s=0;
         for(int i=0;i<N;i++){

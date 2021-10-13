@@ -63,9 +63,38 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 namespace sol{
 
     void solve(){
-        int n,m;
+        LL n,m;
         int i,j,k;
-        int a,b,c;
+        LL a,b,c;
+        cin>>n>>m;
+        vector<LL> v1(n);
+        cin>>v1;
+        int s=0;
+        if(m==0){
+            a=0;
+            for(i=0;i<n;i++){
+                if(v1[i]==0)a++;
+            }
+            cout<<(1<<a)-1<<endl;
+            return;
+        }
+        for(i=0;i<(1<<n);i++){
+            vector<LL> v2={0};
+            for(j=0;j<n;j++){
+                if(~i&1<<j)continue;
+                for(k=v2.size()-1;k>=0;k--){
+                    v2.push_back(v2[k]+v1[j]);
+                    v2[k]+=v1[j]/2;
+                }
+            }
+            for(LL num:v2){
+                if(num==m){
+                    s++;
+                    break;
+                }
+            }
+        }
+        cout<<s<<endl;
     }
 }
 

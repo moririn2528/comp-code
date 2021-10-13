@@ -66,6 +66,39 @@ namespace sol{
         int n,m;
         int i,j,k;
         int a,b,c;
+        cin>>n>>m;
+        vector<vector<int>> v1(2*n,vector<int>(m));
+        vector<int> sc(2*n);
+        for(i=0;i<2*n;i++){
+            string sa;
+            cin>>sa;
+            for(j=0;j<m;j++){
+                if(sa[j]=='G')v1[i][j]=0;
+                if(sa[j]=='C')v1[i][j]=1;
+                if(sa[j]=='P')v1[i][j]=2;
+            }
+        }
+        vector<P> vp;
+        for(i=0;i<m;i++){
+            vp.clear();
+            for(j=0;j<2*n;j++){
+                vp.push_back({-sc[j],j});
+            }
+            sort(vp.begin(),vp.end());
+            for(j=0;j<2*n;j+=2){
+                a=vp[j].second,b=vp[j+1].second;
+                if((v1[a][i]+1)%3==v1[b][i])sc[a]++;
+                if((v1[b][i]+1)%3==v1[a][i])sc[b]++;
+            }
+        }
+        vp.clear();
+        for(i=0;i<2*n;i++){
+            vp.push_back({-sc[i],i});
+        }
+        sort(vp.begin(),vp.end());
+        for(j=0;j<2*n;j++){
+            cout<<vp[j].second+1<<endl;
+        }
     }
 }
 

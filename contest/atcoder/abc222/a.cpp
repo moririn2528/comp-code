@@ -66,6 +66,10 @@ namespace sol{
         int n,m;
         int i,j,k;
         int a,b,c;
+        cin>>n;
+        string sa=to_string(n);
+        while(sa.size()<4)sa="0"+sa;
+        cout<<sa<<endl;
     }
 }
 
