@@ -64,21 +64,49 @@ namespace sol{
     typedef tuple<int,int,int> T;
     typedef pair<double,double> DP;
     const double pi=acos(-1);
+    const double eps=1e-9;
 
     double area(double a,double b,double c){
-        double s=(a+b+c)/2;
+        long double s=(a+b+c)/2;
         return sqrt(s*(s-a)*(s-b)*(s-c));
     }
 
     void fix_angle(double& a){
         while(a<0)a+=2*pi;
-        while(a>=pi)a-=2*pi;
+        while(a>=2*pi)a-=2*pi;
     }
 
-    DP cross_range(DP a,DP b){
-        double a1=a.first,a2=a.second;
-        double b1=b.first,b2=b.second;
-        if(a1<a2 && b1<b2)
+    void cross_range(vector<DP>& va,DP tb){
+        const DP NILL={-10,-10};
+        double da,db;
+        int i;
+        int n=va.size();
+        if(n==0){
+            va.push_back(tb);
+            return;
+        }
+        for(i=0;i<n;i++){
+            DP a=va[i],b=tb;
+            da=max(a.first,b.first),db=min(a.second,b.second);
+            if(a.first<=a.second && b.first<=b.second){
+                if(da<db)va[i]={da,db};
+                else va.erase(va.begin()+i),i--,n--;
+                continue;
+            }
+            if(a.second<=a.first && b.second<=b.first){
+                va[i]={da,db};
+                continue;
+            }
+            if(a.second<=a.first)swap(a,b);
+            if(a.first<=b.second && b.first<=a.second){
+                va[i]={a.first,db};
+                va.push_back({da,a.second});
+                continue;
+            }
+            if(a.first<b.second)va[i]={a.first,db};
+            else if(b.first<a.second)va[i]={da,a.second};
+            else va.erase(va.begin()+i),i--,n--;
+        }
     }
 
     void solve(){
@@ -86,12 +114,12 @@ namespace sol{
         int i,j,k;
         int a,b,c;
         int x,y,r;
-        double da,db,dc;
-        double dl=0,dr=0;
-        double ds=0;
+        double da,db,dc,dd;
+        double ds,dsa;
         vector<T> v1;
         while(cin>>n>>m){
             if(n==0)return;
+            bool flag=true;
             v1.clear();
             for(i=0;i<n;i++){
                 cin>>x>>y>>a;
@@ -102,32 +130,47 @@ namespace sol{
                 else cout<<2*pi*(2*m-a)<<endl;
                 continue;
             }
-            ds=0;
+            ds=0,dsa=0;
             for(i=0;i<n;i++){
-                dl=0,dr=2*pi;
+                vector<DP> va;
                 tie(x,y,r)=v1[i];
                 for(j=0;j<n;j++){
                     if(i==j)continue;
                     tie(a,b,c)=v1[j];
                     da=sqrt(pow(a-x,2)+pow(b-y,2));
-                    if(m<da+c+r)break;
-                    db=2*m-c,dc=2*m-r;
-                    db=area(da,db,dc)*2/db;
-                    dc=cos(db/da);
+                    if(2*m<da+c+r || m<c || m<r){
+                        flag=false;
+                        break;
+                    }
+                    if(da<=r-c)continue;
+                    if(da<=c-r)break;
+                    db=m-r,dc=m-c;
+                    dd=area(da,db,dc)*2.0/db;
+                    dd=asin(dd/da);
+                    if(pow(da,2)+pow(db,2)<pow(dc,2))dd=pi-dd;
                     da=atan2(b-y,a-x);
-                    if(a-x<0)da+=pi;
-                    db=da-dc,dc=da+dc;
-                    fix_angle(da),fix_angle(db);
-                    if(db<da)swap(da,db);
-                    assert(db-da!=pi);
-                    if(db-da>pi)swap(da,db);
+                    db=da-dd,dc=da+dd;
+                    fix_angle(db),fix_angle(dc);
+                    cross_range(va,{db,dc});
+                    if(va.empty())break;
                 }
-                if(j<n)break;
+                if(!flag)break;
+                if(j<n)continue;
+                if(va.empty())va.push_back({0,2*pi});
+                for(j=0;j<va.size();j++){
+                    DP& d=va[j];
+                    da=d.second-d.first;
+                    if(da<0)da+=2*pi;
+                    ds+=(2*m-r)*da;
+                    dsa+=da;
+                }
             }
-            if(i<n){
+            if(!flag || dsa<eps){
                 cout<<0<<endl;
                 continue;
             }
+            ds+=(2*pi-dsa)*m;
+            cout<<ds<<endl;
         }
     }
 }

@@ -21,7 +21,7 @@ using namespace std;
 typedef long long int LL;
 typedef pair<int,int> P;
 typedef pair<LL,LL> LP;
-const LL INF=1LL<<60;
+const int INF=1<<30;
 const LL MAX=1e9+7;
 
 void array_show(int *array,int array_n,char middle=' '){
@@ -59,6 +59,44 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
     is>>p.first>>p.second;
     return is;
 }
+
+template<typename T> class bit{
+private:
+    vector<T> bit_vec;
+    int bit_N=20;
+
+    T bit_comp(T a,T b){
+        return a+b;
+    }
+
+public:
+
+    bit(int n){
+        for(bit_N=0;bit_N<30;bit_N++){
+            if(n<(1<<bit_N))break;
+        }
+        bit_vec.assign((1<<bit_N),0);
+    }
+
+    void set(int pos,T x){
+        bit_vec[pos]=bit_comp(bit_vec[pos],x);
+        for(int i=0;i<bit_N;i++){
+            if(pos&(1<<i))continue;
+            pos|=(1<<i);
+            bit_vec[pos]=bit_comp(bit_vec[pos],x);
+        }
+    }
+
+    T search(int pos){
+        T s=bit_vec[pos];
+        for(int i=0;pos>=(1<<i);i++){
+            if(pos&(1<<i))continue;
+            pos-=(1<<i);
+            s=bit_comp(s,bit_vec[pos]);
+        }
+        return s;
+    }
+};
 
 template <typename T> class seg_tree{
     //monoid
@@ -183,90 +221,54 @@ public:
     }
 };
 
-template<typename T> class Compress{
-    //Compress<int> ca({5,1,2,3});
-    //ca.id(5) //=3
-private:
-    vector<int> id_perm;//v1 index -> vec index
-public:
-    vector<T> vec;
-    void init(const vector<T>& v1){
-        int n=v1.size();
-        int i,j;
-        id_perm.assign(n,-1);
-        vector<pair<T,int>> va;
-        for(i=0;i<n;i++){
-            va.push_back({v1[i],i});
-        }
-        sort(va.begin(),va.end());
-        vec.clear();
-        for(i=0,j=-1;i<n;i++){
-            if(vec.empty() || vec.back()!=va[i].first){
-                vec.push_back(va[i].first);
-                j++;
-            }
-            id_perm[va[i].second]=j;
-        }
-    }
-
-    Compress(const vector<T> v1){
-        init(v1);
-    }
-
-    vector<int> get_id_perm()const{
-        return id_perm;
-    }
-
-    int id(const T a){
-        auto itr=lower_bound(vec.begin(),vec.end(),a);
-        assert(itr!=vec.end());//return -1?
-        assert(*itr==a);
-        return itr-vec.begin();
-    }
-};
-
 namespace sol{
-    typedef tuple<LL,LL,LL> T;
-    LL op(LL a,LL b){return max(a,b);}
 
     void solve(){
         LL n,m;
         int i,j,k;
         LL a,b,c;
-        LL p,q,r;
-        LL x,y;
-        cin>>n>>m>>x>>y;
-        seg_tree<LL> seg(op,-INF,2*m+2),seg2(op,-INF,2*m+2);
-        vector<seg_tree<LL>> vse(3,seg_tree<LL>(op,-INF,2*m+2));
-        vector<LL> va;
-        vector<T> vt;
-        for(i=0;i<m;i++){
-            cin>>c>>a>>b;
-            a--,c--;
-            va.push_back(a),va.push_back(b);
-            vt.push_back({a,b,c});
+        cin>>n>>m;
+        vector<LL> v1(n),v2(n),vs(n);
+        cin>>v1;
+        bit<LL> bt(n),bs(n);
+        seg_tree<P> seg([](P a,P b){
+            if(a.first<b.first)return a;
+            else return b;
+        },{INF,0},n);
+        for(i=0;i<n;i++){
+            v1[i]--;
+            m-=i-bt.search(v1[i]);
+            bt.set(v1[i],1);
+            v2[v1[i]]=i;
         }
-        Compress<LL> com(va);
-        for(i=0;i<m;i++){
-            tie(a,b,c)=vt[i];
-            a=com.id(a),b=com.id(b);
-            vt[i]=T(a,b,c);
+        m=-m;
+        for(i=0;i<n && 0<m;i++){
+            a=v2[i]-bs.search(v2[i]);
+            if(m<a)break;
+            m-=a;
+            bs.set(v2[i],1);
+            vs[i]=i;
         }
-        sort(vt.begin(),vt.end());
-        for(i=0;i<m;i++){
-            tie(a,b,c)=vt[i];
-            q=com.vec[a],r=com.vec[b];
-            p=(r-q)*x;
-            p=max(p,seg2.search(0,a+1)+(r-q)*x);
-            p=max(p,seg.search(a,b)+q*(x+y)+r*x);
-            p=max(p,vse[c].search(a,b)+r*x);
-            if(seg2.get(b)<p){
-                seg.set(b,p-r*(2*x+y));
-                seg2.set(b,p);
+        for(j=0,k=i;j<n;j++){
+            if(v1[j]<i)continue;
+            vs[k++]=v1[j];
+        }
+        for(i=0;i<n;i++){
+            seg.set(i,{vs[i],i});
+        }
+        for(i=0;m>0 && i<n;i++){
+            P pa=seg.search(i,i+m+1);
+            m-=pa.second-i;
+            for(j=pa.second-1;j>=i;j--){
+                swap(vs[j],vs[j+1]);
             }
-            vse[c].set(b,max(vse[c].get(b),p-r*x));
+            for(j=i;j<=pa.second;j++){
+                seg.set(j,{vs[j],j});
+            }
         }
-        cout<<seg2.search()<<endl;
+        for(i=0;i<vs.size();i++){
+            cout<<vs[i]+1<<endl;
+        }
     }
 }
 

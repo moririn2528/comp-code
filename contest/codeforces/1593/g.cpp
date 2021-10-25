@@ -21,7 +21,7 @@ using namespace std;
 typedef long long int LL;
 typedef pair<int,int> P;
 typedef pair<LL,LL> LP;
-const LL INF=1LL<<60;
+const int INF=1<<30;
 const LL MAX=1e9+7;
 
 void array_show(int *array,int array_n,char middle=' '){
@@ -110,19 +110,11 @@ public:
         init_reload();
     }
 
-    int size()const{
-        return n;
-    }
-
     void set(int pos,T a){
         assert(pos>=0 && pos<=N);
         pos+=N;
         seg[pos]=a;
         update((pos-1)/2);
-    }
-
-    T get(const int pos)const{
-        return seg[N+pos];
     }
 
     T search(int a,int b,int l,int r,int x){//[a,b) search
@@ -135,9 +127,6 @@ public:
     T search(int a,int b){
         assert(a<b);
         return search(a,b,0,N+1,0);
-    }
-    T search(){
-        return search(0,size());
     }
 
     int max_right(function<bool(T)>& g,int pos,int l,int r,int x,T& y){
@@ -183,95 +172,47 @@ public:
     }
 };
 
-template<typename T> class Compress{
-    //Compress<int> ca({5,1,2,3});
-    //ca.id(5) //=3
-private:
-    vector<int> id_perm;//v1 index -> vec index
-public:
-    vector<T> vec;
-    void init(const vector<T>& v1){
-        int n=v1.size();
-        int i,j;
-        id_perm.assign(n,-1);
-        vector<pair<T,int>> va;
-        for(i=0;i<n;i++){
-            va.push_back({v1[i],i});
-        }
-        sort(va.begin(),va.end());
-        vec.clear();
-        for(i=0,j=-1;i<n;i++){
-            if(vec.empty() || vec.back()!=va[i].first){
-                vec.push_back(va[i].first);
-                j++;
-            }
-            id_perm[va[i].second]=j;
-        }
-    }
-
-    Compress(const vector<T> v1){
-        init(v1);
-    }
-
-    vector<int> get_id_perm()const{
-        return id_perm;
-    }
-
-    int id(const T a){
-        auto itr=lower_bound(vec.begin(),vec.end(),a);
-        assert(itr!=vec.end());//return -1?
-        assert(*itr==a);
-        return itr-vec.begin();
-    }
-};
-
 namespace sol{
-    typedef tuple<LL,LL,LL> T;
-    LL op(LL a,LL b){return max(a,b);}
+
+    void init(){
+        
+    }
+
+    P op(P a,P b){
+        if(a.first==0)return b;
+        if(b.first==0)return a;
+        if((a.first+a.second)%2==b.second)return {a.first+b.first,a.second};
+        else return {abs(a.first-b.first),a.second};
+    }
 
     void solve(){
-        LL n,m;
+        int n,m;
         int i,j,k;
-        LL a,b,c;
-        LL p,q,r;
-        LL x,y;
-        cin>>n>>m>>x>>y;
-        seg_tree<LL> seg(op,-INF,2*m+2),seg2(op,-INF,2*m+2);
-        vector<seg_tree<LL>> vse(3,seg_tree<LL>(op,-INF,2*m+2));
-        vector<LL> va;
-        vector<T> vt;
-        for(i=0;i<m;i++){
-            cin>>c>>a>>b;
-            a--,c--;
-            va.push_back(a),va.push_back(b);
-            vt.push_back({a,b,c});
+        int a,b,c;
+        string sa;
+        cin>>sa;
+        n=sa.size();
+        cin>>m;
+        vector<int> v1(n+1);
+        for(i=0;i<n;i++){
+            v1[i+1]=v1[i];
+            if(sa[i]=='[' || sa[i]==']')v1[i+1]+=i%2*2-1;
         }
-        Compress<LL> com(va);
         for(i=0;i<m;i++){
-            tie(a,b,c)=vt[i];
-            a=com.id(a),b=com.id(b);
-            vt[i]=T(a,b,c);
+            cin>>a>>b;
+            a--;
+            cout<<abs(v1[b]-v1[a])<<endl;
         }
-        sort(vt.begin(),vt.end());
-        for(i=0;i<m;i++){
-            tie(a,b,c)=vt[i];
-            q=com.vec[a],r=com.vec[b];
-            p=(r-q)*x;
-            p=max(p,seg2.search(0,a+1)+(r-q)*x);
-            p=max(p,seg.search(a,b)+q*(x+y)+r*x);
-            p=max(p,vse[c].search(a,b)+r*x);
-            if(seg2.get(b)<p){
-                seg.set(b,p-r*(2*x+y));
-                seg2.set(b,p);
-            }
-            vse[c].set(b,max(vse[c].get(b),p-r*x));
-        }
-        cout<<seg2.search()<<endl;
     }
 }
 
 int main(){
     cin.tie(0);
     ios::sync_with_stdio(false);
-    sol::solve();
+    int n,i;
+    sol::init();
+    cin>>n;
+    for(i=0;i<n;i++){
+        sol::solve();
+    }
 }
