@@ -67,7 +67,7 @@ namespace sol{
         int i,j,k;
         int a,b,c;
         cin>>a>>b;
-        cout<<pow(3,a-b)<<endl;
+        cout<<(1LL<<(5*(a-b)))<<endl;
     }
 }
 

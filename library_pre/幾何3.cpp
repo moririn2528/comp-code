@@ -1,6 +1,3 @@
-#include<bits/stdc++.h>
-using namespace std;
-
 namespace geometory{
 	const double eps=1e-9;
 	const double pi=acos(-1);
@@ -99,6 +96,8 @@ template<typename T> class SegLine: public Line<T>{
 	using Line<T>::st;
 	using Line<T>::en;
 	using Line<T>::sign;
+	using Line<T>::in;
+	using Line<T>::different_side;
 public:
     T length()const{
         return abs(en-st);
@@ -130,11 +129,11 @@ public:
 
 	T distance(const Line<T>& line)const override{
 		if(is_cross(line))return 0;
-		min(line.distance(st),line.distance(en));
+		return min(line.distance(st),line.distance(en));
 	}
 	T distance(const SegLine& line)const{
 		if(is_cross(line))return 0;
-		min(distance(line.st),distance(line.en));
+		return min(distance(line.st),distance(line.en));
 	}
 
 	complex<T> cross_point(const Line<T>& line)const override{
@@ -149,11 +148,11 @@ public:
 
 template<typename T> class Circle{
 	typedef complex<T> C;
-	T area(T a,T b,T c){
+	T area(T a,T b,T c)const{
 		T s=(a+b+c)/2;
 		return sqrt(s*(s-a)*(s-b)*(s-c));
 	}
-	T area_direc(T base,T to,T c,bool upside){
+	C area_direc(T base,T to,T c,bool upside)const{
 		T s=area(base,to,c);
 		T ang=asin(s*2/base/to);
 		if(pow(base,2)+pow(to,2)<pow(c,2))ang=geometory::pi-ang;

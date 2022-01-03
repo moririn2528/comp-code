@@ -66,21 +66,31 @@ namespace sol{
     vector<vector<int>> path;
     map<T,P> m1;
 
+    P dfs(int pos,int al,int be);
+
     void setp(P& p1,P p2){
         p1.first=min(p1.first,p2.first);
         p1.second=max(p1.second,p2.second);
     }
 
+    void addp(P& p1,P p2){
+        p1.first+=p2.first;
+        p1.second+=p2.second;
+    }
+
     P dfs2(int pos,int al,int be,int used,int n){
         int i,j;
+        int to;
         P pa,ps={INF,-INF};
-        if(__builtin_popcount(used)<n){
-            for(i=0;i<n;i++){
-                if(used&1<<i)continue;
-                pa=dfs(pos,al,be);
-                setp(ps,dfs2(pos,al,be,))
-            }
+        if(__builtin_popcount(used)==n)return {0,0};
+        for(i=0;i<n;i++){
+            if(used&1<<i)continue;
+            to=path[pos][i];
+            pa=dfs(to,-be,-al);
+            if(-val[to]<be)addp(pa,dfs2(pos,max(al,-val[to]),be,used|1<<i,n));
+            setp(ps,pa);
         }
+        return ps;
     }
 
     P dfs(int pos,int al,int be){
@@ -88,14 +98,9 @@ namespace sol{
         if(itr!=m1.end())return itr->second;
         if(path[pos].empty())return {1,1};
         int n=path[pos].size();
-        int i,j,k;
-        int a,b,c;
-        vector<vector<P>> dp(1<<n,vector<P>(n,{INF,-INF}));
-        for(i=0;i<n;i++){
-            dp[1<<i][i]=dfs(path[pos][i],al,be);
-        }
-        int s1=INF,s2=-INF;
-        return {s1,s2};
+        P pa=dfs2(pos,al,be,0,n);
+        m1[{pos,al,be}]=pa;
+        return pa;
     }
 
     int negmax(int pos){
