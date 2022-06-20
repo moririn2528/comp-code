@@ -12,7 +12,10 @@ echo "contest site: $contest_site"
 echo "problem name: $problem_name"
 
 switch($contest_site){
-    "atcoder" {$contest_url="https://atcoder`.jp/contests/"+$base_url+"/tasks/"+$problem_name.Replace("-","_")}
+    "atcoder" {
+        if($base_url.Substring(0,4) -eq "past"){$base_url=$base_url+"-open"}
+        $contest_url="https://atcoder`.jp/contests/"+$base_url+"/tasks/"+$problem_name.Replace("-","_")
+    }
     "codeforces" {$contest_url="https://codeforces`.com/contest/"+$base_url+"/problem/"+$short_problem_name.ToUpper()}
     "yukicoder" {$contest_url="https://yukicoder`.me/problems/no/"+$short_problem_name}
     "aoj" {$contest_url="https://judge`.u-aizu`.ac`.jp/onlinejudge/description`.jsp?id="+$short_problem_name}

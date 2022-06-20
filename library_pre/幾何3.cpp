@@ -276,3 +276,20 @@ public:
 		return vs;
 	}
 };
+
+template<typename T> class Polygon{
+	typedef complex<T> C;
+	vector<C> points;
+public:
+	Polygon(vector<C>& p,bool ordered=false){
+		points=p;
+		if(ordered)return;
+		
+	}
+	Polygon(vector<pair<T,T>>& p,bool ordered=false){
+		vector<C> v1;
+		for(auto pa:p){
+			v1.push_back(C(pa.first,pa.second));
+		}
+	}
+};

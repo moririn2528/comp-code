@@ -62,17 +62,70 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 
 namespace sol{
 
-    void solve(){
+    void init(){
+        
+    }
+
+    bool solve(){
         int n,m;
         int i,j,k;
-        int a,b,c;
-        cin>>n;
-        
+        LL a,b,c;
+        cin>>n>>m;
+        vector<LL> v1(n+1);
+        vector<LL> va(n),vb(n);
+        cin>>va>>vb;
+        for(i=0;i<n;i++){
+            v1[i+1]=v1[i]+va[i]-vb[i];
+        }
+        set<int> s1;
+        for(i=0;i<=n;i++){
+            if(v1[i])s1.insert(i);
+        }
+        vector<P> vp;
+        vector<vector<int>> vv(n+1);
+        for(i=0;i<m;i++){
+            cin>>a>>b;
+            a--;
+            if(v1[a]==0 && v1[b]==0){
+                vp.push_back({a,b});
+                continue;
+            }
+            if(v1[a]){
+                vv[a].push_back(b);
+            }
+            if(v1[b]){
+                vv[b].push_back(a);
+            }
+        }
+        if(v1[n])return false;
+        while(!vp.empty() && !s1.empty()){
+            a=vp.back().first, b=vp.back().second;
+            vp.pop_back();
+            auto itr=s1.lower_bound(a);
+            while(itr!=s1.end() && *itr<b){
+                c=*itr;
+                s1.erase(itr);
+                itr=s1.lower_bound(a);
+                v1[c]=0;
+                for(LL to:vv[c]){
+                    if(v1[to])continue;
+                    int x=min(to,c),y=max(to,c);
+                    vp.push_back({x,y});
+                }
+            }
+        }
+        return s1.empty();
     }
 }
 
 int main(){
     cin.tie(0);
     ios::sync_with_stdio(false);
-    sol::solve();
+    int n,i;
+    sol::init();
+    cin>>n;
+    for(i=0;i<n;i++){
+        if(sol::solve())cout<<"YES"<<endl;
+        else cout<<"NO"<<endl;
+    }
 }
