@@ -15,13 +15,13 @@
 #include<complex>
 #include<numeric>
 #include<functional>
-#include<unordered_map>
-#include<unordered_set>
+#include<atcoder/all>
 using namespace std;
+using namespace atcoder;
 typedef long long int LL;
 typedef pair<int,int> P;
 typedef pair<LL,LL> LP;
-const int INF=1<<30;
+const LL INF=1LL<<60;
 const LL MAX=1e9+7;
 
 void array_show(int *array,int array_n,char middle=' '){
@@ -62,34 +62,69 @@ template<typename T1,typename T2> istream& operator>>(istream& is,pair<T1,T2>& p
 
 namespace sol{
 
-    void init(){
-        
-    }
+    LP op(LP a,LP b){return max(a,b);}
+    LP e(){return LP(-INF,-1);}
 
     void solve(){
-        int n,m;
+        LL n,m;
         int i,j,k;
-        int a,b,c;
+        LL a,b,c;
         cin>>n;
-        vector<int> v1(n);
+        vector<LL> v1(n);
         cin>>v1;
-        a=0;
+        segtree<LP,op,e> seg(2*n);
+        set<int> s1;
+        LL x,y,z;
+        x=v1[0],z=v1[0];
+        s1.insert(0);
         for(i=0;i<n;i++){
-            a+=v1[i];
+            seg.set(i,LP(v1[i],i));
+            seg.set(n+i,LP(v1[i],n+i));
         }
-        if(a%n==0)cout<<0<<endl;
-        else cout<<1<<endl;
+        vector<char> va(n);
+        va[n-1]=1;
+        for(i=n-2;i>=0 && va[i+1];i--){
+            if(v1[i]<=v1[i+1])va[i]=1;
+        }
+        for(i=1;i<n;i++){
+            if(z<v1[i]){
+                z=v1[i];
+                s1.insert(i);
+            }
+            x+=z;
+        }
+        LL s=x;
+        if(!va[0])s+=n;
+        for(i=0;i+1<n;i++){
+            s1.erase(i);
+            if(s1.empty())a=n+i;
+            else a=*(s1.lower_bound(i));
+            x-=v1[i]*(a-i);
+            while(i+1<a){
+                LP p=seg.prod(i+1,a);
+                x+=p.first*(a-p.second);
+                a=p.second;
+                s1.insert(a);
+            }
+            assert(!s1.empty());
+            auto itr=s1.end();
+            itr--;
+            a=*itr;
+            if(n<=a)a-=n;
+            x+=max(v1[a],v1[i]);
+            if(v1[a]<v1[i])s1.insert(n+i);
+            y=x+i+1;
+            if(!va[i+1])y+=n;
+            s=min(s,y);
+        }
+        for(i=0;i<n;i++){
+            s-=v1[i];
+        }
+        cout<<s<<endl;
         
     }
 }
 
 int main(){
-    cin.tie(0);
-    ios::sync_with_stdio(false);
-    int n,i;
-    sol::init();
-    cin>>n;
-    for(i=0;i<n;i++){
-        sol::solve();
-    }
+    sol::solve();
 }

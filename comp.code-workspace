@@ -104,7 +104,8 @@
 			"thread": "cpp",
 			"valarray": "cpp",
 			"variant": "cpp",
-			"typeindex": "cpp"
+			"typeindex": "cpp",
+			"cassert": "cpp"
 		},
 		"C_Cpp.default.includePath": [
 			"${workspaceFolder}\\header"
